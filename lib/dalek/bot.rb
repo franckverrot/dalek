@@ -3,6 +3,7 @@ module Dalek
   class Bot
     class RoomProxy
       include Builtin::Say
+      include Builtin::Paste
       include Builtin::Load
 
       attr_accessor :room
