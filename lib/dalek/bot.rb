@@ -2,7 +2,7 @@ require 'active_support/core_ext/module/delegation'
 module Dalek
   class Bot
     class RoomProxy
-      include Builtin::Say
+      include Builtin::Text
       include Builtin::Paste
       include Builtin::Load
 

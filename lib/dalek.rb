@@ -11,7 +11,7 @@ module Dalek
 
 	module Builtin
 		autoload :Load,  'dalek/builtin/load'
-		autoload :Say,   'dalek/builtin/say'
+		autoload :Text, 'dalek/builtin/text'
 		autoload :Paste, 'dalek/builtin/paste'
 	end
 end

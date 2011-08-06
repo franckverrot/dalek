@@ -1,5 +1,5 @@
 #encoding: UTF-8
 
-get "hello" do
-    say "world"
+on "hello" do
+    text "world"
 end

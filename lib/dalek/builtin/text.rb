@@ -1,11 +1,11 @@
 module Dalek
   module Builtin
-    module Say
-      def say(what)
+    module Text
+      def text(what) # we could probably use delegation here
         @room.text(what) {} unless what.empty?
         what
       end
-      alias :text :say
+      alias :say :text
     end
   end
 end

@@ -16,6 +16,6 @@ class FakeConnection
 end
 
 class FakeRoom
-  def text(*args); end
+  def text(what); what; end
   alias :paste :text
 end
