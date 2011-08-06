@@ -5,7 +5,7 @@ module Dalek
       include Builtin::Say
       include Builtin::Load
 
-      attr_accessor :room, :payload
+      attr_accessor :room
 
       def initialize(room, payload = '')
         @room, @payload = room, payload

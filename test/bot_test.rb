@@ -36,6 +36,6 @@ class TestBot < Test::Unit::TestCase
       end
     end)
     proxy.load(url)
-    assert_equal 'foo bar', proxy.ping
+    assert_equal 'foo bar', proxy.ping('foo bar') #bleh this sucks... the payload is L32
   end
 end

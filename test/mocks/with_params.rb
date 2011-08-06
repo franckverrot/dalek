@@ -1,5 +1,5 @@
 #encoding: UTF-8
 
-get "ping" do
+get "ping" do |payload|
     say payload
 end
