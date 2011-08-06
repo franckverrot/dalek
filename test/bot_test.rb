@@ -26,5 +26,16 @@ class TestBot < Test::Unit::TestCase
     proxy.load(url)
     assert_equal 'world', proxy.hello
   end
-end
 
+  def test_remote_with_payload
+    url = 'with_params.rb'
+    proxy = Dalek::Bot::RoomProxy.new(@room, 'foo bar')
+    proxy.extend(Module.new do
+      def http_get(url)
+        File.read('test/mocks/with_params.rb')
+      end
+    end)
+    proxy.load(url)
+    assert_equal 'foo bar', proxy.ping
+  end
+end

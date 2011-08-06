@@ -5,10 +5,10 @@ module Dalek
       include Builtin::Say
       include Builtin::Load
 
-      attr_accessor :room
+      attr_accessor :room, :payload
 
-      def initialize(room)
-        @room = room
+      def initialize(room, payload = '')
+        @room, @payload = room, payload
       end
       delegate :text, :to => :room
       delegate :paste, :to => :room
@@ -40,7 +40,7 @@ module Dalek
               if message.type == 'TextMessage'
                 message.body =~ /(\w+)(.*)?/
                 action, payload = $1, $2.strip
-                room_proxy = RoomProxy.new(room)
+                room_proxy = RoomProxy.new(room, payload)
                 if room_proxy.respond_to?(action)
                   if room_proxy.method(action).arity == 0
                     room_proxy.send action
