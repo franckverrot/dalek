@@ -25,6 +25,7 @@ module Dalek
         REDIS.set('actions', actions)
         REDIS.set(what, block)
       end
+      private :add_action
     end
 
     def initialize(connection)
