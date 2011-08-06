@@ -1,9 +1,9 @@
 require 'rake/testtask'
 Rake::TestTask.new do |t|
   t.libs << "test"
-  t.pattern = "test/*_test.rb"
-  t.verbose = true
-  t.warning = true
+  t.test_files   = Dir.glob("test/*_test.rb").sort
+  t.verbose      = true
+  t.warning      = true
 end
 
 task :default => :test
