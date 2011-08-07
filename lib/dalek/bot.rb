@@ -39,13 +39,18 @@ module Dalek
             room.stream do |message|
               if message.type == 'TextMessage'
                 message.body =~ /(\w+)(.*)?/
-                action, payload = $1, $2.strip
+                  action, payload = $1, $2.strip
                 room_proxy = RoomProxy.new(room, payload)
                 if room_proxy.respond_to?(action)
-                  if room_proxy.method(action).arity == 0
-                    room_proxy.send action
-                  else
-                    room_proxy.send action, payload
+                  begin
+                    if room_proxy.method(action).arity == 0
+                      room_proxy.send action
+                    else
+                      room_proxy.send action, payload
+                    end
+                  rescue Exception => e
+                    room_proxy.text "#{action} failed."
+                    room_proxy.paste e.backtrace
                   end
                 else
                   if action == 'help'
