@@ -11,8 +11,6 @@ module Dalek
       def initialize(room, payload = '')
         @room, @payload = room, payload
       end
-      delegate :text, :to => :room
-      delegate :paste, :to => :room
 
       def on(what, &block)
         add_action(what, block)
