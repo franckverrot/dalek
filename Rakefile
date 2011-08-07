@@ -16,13 +16,11 @@ task :run do
   uri = URI.parse(ENV["REDISTOGO_URL"])
   REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-  login     = ENV['CAMPFIRE_LOGIN']
-  password  = ENV['CAMPFIRE_PASSWORD']
+  token     = ENV['CAMPFIRE_TOKEN']
   subdomain = ENV['CAMPFIRE_SUBDOMAIN']
 
   conn = Firering::Connection.new("http://#{subdomain}.campfirenow.com") do |c|
-    c.login = login
-    c.password = password
+    c.token       = token
     c.max_retries = 10 # default to -1, which means perform connection retries on drop forever.
   end
 
