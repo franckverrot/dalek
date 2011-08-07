@@ -1,1 +1,1 @@
-rake: rake run
+worker: bundle exec rake run
