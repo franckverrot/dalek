@@ -54,7 +54,7 @@ module Dalek
                   end
                 else
                   if action == 'help'
-                    room_proxy.text "Actions: #{REDIS.get('actions').inspect}" do end
+                    room_proxy.text "Actions: #{REDIS.get('actions').inspect}"
                   end
                 end
               end
