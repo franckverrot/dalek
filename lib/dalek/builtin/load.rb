@@ -1,23 +1,24 @@
 module Dalek
-	module Builtin
-		module Load
-			require 'faraday'
-			def load(url)
-				begin
-          callback = http_get(url.strip)
-          # room.text("Evaling this: #{callback}") {}
-					instance_eval(callback)
-					@room.text("Plugin loaded!") {}
-				rescue Exception => e
-					@room.text("Can't load this plugin: #{url}") {}
-					@room.paste(e.inspect) {}
-					@room.paste(e.backtrace.inspect) {}
-				end
-			end
-
-      def http_get(url)
-        Faraday.get(url.strip).body
+  module Builtin
+    module Load
+      def load(url)
+        EM.run do
+          http = EventMachine::HttpRequest.new(url.strip).get
+          http.errback { EM.stop }
+          http.callback do
+            response = http.response
+            begin
+              instance_eval(response)
+              @room.text("Plugin loaded!")
+            rescue Exception => e
+              @room.text("Can't load this plugin: #{url}")
+              @room.paste(e.inspect)
+              @room.paste(e.backtrace.inspect)
+            end
+            EM.stop
+          end
+        end
       end
-		end
-	end
+    end
+  end
 end
