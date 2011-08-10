@@ -1,67 +1,65 @@
 require 'active_support/core_ext/module/delegation'
 module Dalek
   class Bot
-    class RoomProxy
-      include Builtin::Text
-      include Builtin::Paste
-      include Builtin::Load
-
-      attr_accessor :room
-
-      def initialize(room, payload = '')
-        @room, @payload = room, payload
-      end
-
-      def on(what, &block)
-        add_action(what, block)
-        self.class.send(:define_method, what, &block)
-      end
-      alias :get :on
-
-      def add_action(what, block)
-        actions = REDIS.get('actions') || []
-        actions << what
-        REDIS.set('actions', actions)
-        REDIS.set(what, block)
-      end
-      private :add_action
-    end
-
     def initialize(connection)
       @connection = connection
+      @actions = Hash.new { |k,v| k[v] = [] }
     end
 
+
+    def on(what, &block)
+      @actions[what] << block
+    end
+
+
+    def handle_message(room, message)
+      if message.type == 'TextMessage'
+        # Sadly L26 instance_eval's on a room, we can't just bootstrap
+        # the load method using our own DSL. #sadpanda
+        if params = extract_params(message.body, 'load (?<url>.*)')
+          room.params = params
+          begin
+            code = ::Faraday.get(params[:url]).body
+            instance_eval code
+          rescue Exception => e
+            room.text  "Exception raised: #{e.message}"
+            room.paste "Details: #{e.backtrace}"
+          end
+        else
+          @actions.each do |action, callbacks|
+            params = extract_params(message.body, action)
+            next if params.nil?
+
+            room.params = params
+            callbacks.each { |callback| room.instance_eval &callback }
+          end
+        end
+      end
+    end
+
+    def extract_params(message,action)
+      Regexp.new(rework_action(action)).match(message)
+    end
+
+    # Will be used to simplify regexps
+    # 'hello (?<world>\w+)' will become 'hello :world'
+    def rework_action(action)
+      action
+    end
+    private :rework_action
 
     def run
       @connection.authenticate do |user|
         @connection.rooms do |rooms|
           rooms.each do |room|
             room.stream do |message|
-              if message.type == 'TextMessage'
-                message.body =~ /(\w+)(.*)?/
-                  action, payload = $1, $2.strip
-                room_proxy = RoomProxy.new(room, payload)
-                if room_proxy.respond_to?(action)
-                  begin
-                    if room_proxy.method(action).arity == 0
-                      room_proxy.send action
-                    else
-                      room_proxy.send action, payload
-                    end
-                  rescue Exception => e
-                    room_proxy.text "#{action} failed."
-                    room_proxy.paste e.backtrace
-                  end
-                else
-                  if action == 'help'
-                    room_proxy.text "Actions: #{REDIS.get('actions').inspect}"
-                  end
-                end
-              end
+              handle_event(room, message)
             end
           end
         end
       end
     end
+    include Builtin::Text
+    include Builtin::Paste
   end
 end

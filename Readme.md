@@ -22,7 +22,6 @@ available though:
 
 * `load http://example.com/mygist.txt`: Dalek will read the content of
   the `mygist.txt` file and execute it.
-* `say <words>`: Dalek will just repeat what you told him to
 * `help`: Dalek will output a list of known commands
 
 ## How to create a plugin
@@ -41,17 +40,27 @@ Everytime someone will type 'foo' as the first word of a message in
 Campfire, Dalek will wake up and execute the body of the block. In this
 very case, it will send "bar" to the Campfire room.
 
-You can access a special field called parameters to use the payload for
-fun and profit:
-
+You can use a Regex as a parameter to extract some portions of the
+payload like this:
 
 ```ruby
-  on 'weather' do
-    city = payload
-    result = some_logic_to_get_the_weather(city)
+  on 'weather (?<location>.*)' do
+    result = some_logic_to_get_the_weather_of(params[:location])
     say result
   end
 ```
+
+It is planned to make things a bit easier and only have to write this:
+
+```ruby
+  on 'weather :location' do
+    result = some_logic_to_get_the_weather_of(params[:location])
+    say result
+  end
+```
+
+Pull Requests are welcome.
+
 
 ## How to test a plugin
 

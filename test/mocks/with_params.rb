@@ -1,5 +1,4 @@
 #encoding: UTF-8
-
-on "ping" do |payload|
-    text payload
+on 'ping (?<who>\w+)' do
+  text "hello #{params[:who]}"
 end

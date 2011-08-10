@@ -20,6 +20,26 @@ class FakeConnection
 end
 
 class FakeRoom
-  def text(what); what; end
+  attr_accessor :messages
+  attr_accessor :params
+
+  def text(what)
+    messages << what
+  end
+
   alias :paste :text
+
+  def initialize
+    @messages = []
+    @params = {}
+  end
+end
+
+
+class FakeMessage
+  attr_accessor :body
+  def type; 'TextMessage' end
+  def initialize(body)
+    @body = body
+  end
 end
