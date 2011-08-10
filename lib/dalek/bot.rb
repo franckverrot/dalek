@@ -53,7 +53,7 @@ module Dalek
         @connection.rooms do |rooms|
           rooms.each do |room|
             room.stream do |message|
-              handle_event(room, message)
+              handle_message(room, message)
             end
           end
         end
