@@ -1,0 +1,10 @@
+# Better use this like DALEK_CONFIG=config2.yml rake run
+# or even RACK_ENV=production rake run
+# development:
+  # redis: 
+  # campfire_token: 
+  # campfire_subdomain: 
+production:
+  redis: <%= ENV["REDISTOGO_URL"] %>
+  campfire_token: <%= ENV['CAMPFIRE_TOKEN'] %>
+  campfire_subdomain: <%= ENV['CAMPFIRE_SUBDOMAIN'] %>

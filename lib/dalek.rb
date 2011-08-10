@@ -6,9 +6,11 @@ require 'firering'
 require 'redis'
 require 'nokogiri'
 require 'faraday'
+require 'erb'
 
 module Dalek
-  autoload :Bot, 'dalek/bot'
+  autoload :Bot,     'dalek/bot'
+  autoload :Config,  'dalek/Config'
 
   module Builtin
     autoload :Load,  'dalek/builtin/load'

@@ -12,12 +12,14 @@ task :run do
 
   $:<< 'lib'
   require 'dalek'
+  env = ENV.fetch('RACK_ENV','development')
+  config = Dalek::Config.read(ENV.fetch('DALEK_CONFIG','config.yml'))[env]
 
-  uri = URI.parse(ENV["REDISTOGO_URL"])
+  uri       = URI.parse(config['redis'])
+  token     = config['campfire_token']
+  subdomain = config['campfire_subdomain']
+
   REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-
-  token     = ENV['CAMPFIRE_TOKEN']
-  subdomain = ENV['CAMPFIRE_SUBDOMAIN']
 
   conn = Firering::Connection.new("http://#{subdomain}.campfirenow.com") do |c|
     c.token       = token
