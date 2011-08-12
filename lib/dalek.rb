@@ -7,6 +7,7 @@ require 'redis'
 require 'nokogiri'
 require 'faraday'
 require 'erb'
+require 'json'
 
 module Dalek
   autoload :Bot,     'dalek/bot'
