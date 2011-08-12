@@ -16,14 +16,17 @@ module Dalek
       if message.type == 'TextMessage'
         # Sadly L26 instance_eval's on a room, we can't just bootstrap
         # the load method using our own DSL. #sadpanda
-        if load_params = extract_params(message.body, 'load (?<url>.*)')
+        if load_params = extract_params(message.body, '^load (?<url>.*)')
           room.params = load_params
+          url = get_url(load_params[:url])
           begin
-            code = ::Faraday.get(load_params[:url]).body
+            code = ::Faraday.get(url).body
             instance_eval code
+            room.text("Loaded code from #{url}") {}
           rescue Exception => e
-            room.text  "Exception raised: #{e.message}"
-            room.paste "Details: #{e.backtrace}"
+            room.text("Can't load code from #{url}") {}
+            room.text("Exception raised: #{e.message}") {}
+            room.paste("Details: #{e.backtrace}") {}
           end
         else
           @actions.each do |action, callbacks|
@@ -34,6 +37,15 @@ module Dalek
             callbacks.each { |callback| room.instance_eval(&callback) }
           end
         end
+      end
+    end
+
+    def get_url(url)
+      case url
+      when /^gist:/
+        "https://raw.github.com/gist/#{url.split(':').last}"
+      else
+        url
       end
     end
 
