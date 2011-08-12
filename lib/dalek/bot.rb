@@ -16,10 +16,10 @@ module Dalek
       if message.type == 'TextMessage'
         # Sadly L26 instance_eval's on a room, we can't just bootstrap
         # the load method using our own DSL. #sadpanda
-        if params = extract_params(message.body, 'load (?<url>.*)')
-          room.params = params
+        if load_params = extract_params(message.body, 'load (?<url>.*)')
+          room.params = load_params
           begin
-            code = ::Faraday.get(params[:url]).body
+            code = ::Faraday.get(load_params[:url]).body
             instance_eval code
           rescue Exception => e
             room.text  "Exception raised: #{e.message}"
@@ -27,11 +27,11 @@ module Dalek
           end
         else
           @actions.each do |action, callbacks|
-            params = extract_params(message.body, action)
-            next if params.nil?
+            message_params = extract_params(message.body, action)
+            next if message_params.nil?
 
-            room.params = params
-            callbacks.each { |callback| room.instance_eval &callback }
+            room.params = message_params
+            callbacks.each { |callback| room.instance_eval(&callback) }
           end
         end
       end
