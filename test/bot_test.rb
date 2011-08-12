@@ -8,6 +8,14 @@ class TestBot < Test::Unit::TestCase
     @bot   = ::Dalek::Bot.new(@conn)
   end
 
+  def test_global_on
+    ::Dalek::Bot.on("global_world") { text "hello" }
+    @bot = ::Dalek::Bot.new(@conn)
+
+    @bot.handle_message(@room, ::FakeMessage.new("global_world"))
+    assert_equal "hello", @room.messages.last
+  end
+
   def test_on
     @bot.on('world') { text 'hello' }
     @bot.handle_message(@room, ::FakeMessage.new('world'))

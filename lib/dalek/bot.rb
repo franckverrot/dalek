@@ -1,11 +1,19 @@
 require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/class/attribute_accessors'
+
 module Dalek
   class Bot
+    cattr_accessor :global_actions
+    @@global_actions = Hash.new { |k,v| k[v] = [] }
     def initialize(connection)
       @connection = connection
       @actions = Hash.new { |k,v| k[v] = [] }
+      @actions.merge!(self.class.global_actions)
     end
 
+    def self.on(what, &block)
+      global_actions[what] << block
+    end
 
     def on(what, &block)
       @actions[what] << block
