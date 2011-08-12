@@ -22,6 +22,7 @@ end
 class FakeRoom
   attr_accessor :messages
   attr_accessor :params
+  attr_accessor :bot
 
   def text(what)
     messages << what

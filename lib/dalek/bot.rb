@@ -5,6 +5,9 @@ module Dalek
   class Bot
     cattr_accessor :global_actions
     @@global_actions = Hash.new { |k,v| k[v] = [] }
+
+    attr_reader :actions
+
     def initialize(connection)
       @connection = connection
       @actions = Hash.new { |k,v| k[v] = [] }
@@ -19,41 +22,18 @@ module Dalek
       @actions[what] << block
     end
 
-
     def handle_message(room, message)
       if message.type == 'TextMessage'
-        # Sadly L26 instance_eval's on a room, we can't just bootstrap
-        # the load method using our own DSL. #sadpanda
-        if load_params = extract_params(message.body, '^load (?<url>.*)')
-          room.params = load_params
-          url = get_url(load_params[:url])
-          begin
-            code = ::Faraday.get(url).body
-            instance_eval code
-            room.text("Loaded code from #{url}") {}
-          rescue Exception => e
-            room.text("Can't load code from #{url}") {}
-            room.text("Exception raised: #{e.message}") {}
-            room.paste("Details: #{e.backtrace}") {}
-          end
-        else
-          @actions.each do |action, callbacks|
-            message_params = extract_params(message.body, action)
-            next if message_params.nil?
+        actions.keys.each do |action|
+          callbacks = @actions[action]
+          message_params = extract_params(message.body, action)
+          next if message_params.nil?
 
-            room.params = message_params
-            callbacks.each { |callback| room.instance_eval(&callback) }
-          end
+          # TODO : use a request object
+          room.params = message_params
+          room.bot = self
+          callbacks.each { |callback| room.instance_eval(&callback) }
         end
-      end
-    end
-
-    def get_url(url)
-      case url
-      when /^gist:/
-        "https://raw.github.com/gist/#{url.split(':').last}"
-      else
-        url
       end
     end
 
@@ -81,5 +61,6 @@ module Dalek
     end
     include Builtin::Text
     include Builtin::Paste
+    include Builtin::Load
   end
 end
