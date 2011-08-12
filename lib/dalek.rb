@@ -14,9 +14,12 @@ module Dalek
   autoload :Config,  'dalek/Config'
 
   module Builtin
-    autoload :Load,  'dalek/builtin/load'
     autoload :Text,  'dalek/builtin/text'
     autoload :Paste, 'dalek/builtin/paste'
+  end
+
+  module Plugins
+    autoload :Load, 'dalek/plugins/load'
   end
 end
 

@@ -61,6 +61,6 @@ module Dalek
     end
     include Builtin::Text
     include Builtin::Paste
-    include Builtin::Load
+    include Plugins::Load
   end
 end
