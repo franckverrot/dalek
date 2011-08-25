@@ -5,6 +5,6 @@
   # campfire_token: 
   # campfire_subdomain: 
 production:
-  redis: <%= ENV["REDISTOGO_URL"] %>
+  redis: <%= ENV["REDIS_URL"] %>
   campfire_token: <%= ENV['CAMPFIRE_TOKEN'] %>
   campfire_subdomain: <%= ENV['CAMPFIRE_SUBDOMAIN'] %>

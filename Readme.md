@@ -76,4 +76,4 @@ Dalek was made to work on Heroku's "Cedar" stack
 
 You can run it with this command:
 
-REDISTOGO_URL=redis://127.0.0.1:6379 CAMPFIRE_TOKEN=<token> CAMPFIRE_SUBDOMAIN=<subdomain> rake run
+REDIS_URL=redis://127.0.0.1:6379 CAMPFIRE_TOKEN=<token> CAMPFIRE_SUBDOMAIN=<subdomain> rake run
